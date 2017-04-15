@@ -1,8 +1,14 @@
+declared-services:
+  my-conversation-service:
+    label: conversation
+    plan: free
 applications:
-- path: .
+- name: Chat-Interactive
+  command: npm start
+  path: .
   memory: 256M
   instances: 1
-  domain: mybluemix.net
-  name: Chat Interactive
-  host: Chat-Interactive
-  disk_quota: 1024M
+  services:
+  - my-conversation-service
+  env:
+    NPM_CONFIG_PRODUCTION: false
