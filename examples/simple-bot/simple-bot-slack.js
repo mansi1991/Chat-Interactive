@@ -13,7 +13,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+var slackController = Botkit.slackbot();
+var slackBot = slackController.spawn({
+    token: YOUR_SLACK_TOKEN
+});
 
+var watsonMiddleware = require('botkit-middleware-watson')({
+  username: 7027a447-837b-4ccb-827a-4798a09ca0a0,
+  password: G667oLABs4Kp,
+  workspace_id: Y2d540c47-7de4-4dda-a306-7a39d21d3430,
+  version_date: '2016-09-20',
+  minimum_confidence: 0.50, // (Optional) Default is 0.75
+});
+slackController.middleware.receive.use(watsonMiddleware.receive);
+slackBot.startRTM();
+
+slackController.hears(['.*'], ['direct_message', 'direct_mention', 'mention'], function(bot, message) {
+    bot.reply(message, message.watsonData.output.text.join('\n'));
+});
+slackController.middleware.receive.use(middleware.receive);
+slackController.hears(['.*'], ['direct_message', 'direct_mention', 'mention'], function(bot, message) {
+  bot.reply(message, message.watsonData.output.text.join('\n'));
+});
+slackController.hears(['.*'], ['direct_message'], function(bot, message) {
+  middleware.interpret(bot, message, function(err) {
+    if (!err)
+      bot.reply(message, message.watsonData.output.text.join('\n'));
+  });
+});
+slackController.hears(['hello'], ['direct_message', 'direct_mention', 'mention'], watsonMiddleware.hear, function(bot, message) {
+
+    bot.reply(message, message.watsonData.output.text.join('\n'));
+
+    // now do something special related to the hello intent
+
+});
+slackController.changeEars(watsonMiddleware.hear);
+
+slackController.hears(['hello'], ['direct_message', 'direct_mention', 'mention'], function(bot, message) {
+
+    bot.reply(message, message.watsonData.output.text.join('\n'));
+
+    // now do something special related to the hello intent
+});
+middleware.before = function(message, conversationPayload, callback) {
+    // Code here gets executed before making the call to Conversation.
+    callback(null, customizedPayload);
+  }
+middleware.after = function(message, conversationResponse, callback) {
+    // Code here gets executed after the call to Conversation.
+    callback(null, conversationResponse);
+  }
 require('dotenv').load();
 
 var Botkit = require('botkit');
